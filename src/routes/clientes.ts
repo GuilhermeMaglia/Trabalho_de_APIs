@@ -42,44 +42,44 @@ router.post("/", async (req, res) => {
   }
 })
 
-// router.put("/:id", async (req, res) => {
-//   // recebe o id passado como parâmetro
-//   const { id } = req.params
+router.put("/:id", async (req, res) => {
+  // recebe o id passado como parâmetro
+  const { id } = req.params
 
-//   const valida = alunoSchema.safeParse(req.body)
-//   if (!valida.success) {
-//     res.status(400).json({ erro: valida.error })
-//     return
-//   }
+  const valida = clienteSchema.safeParse(req.body)
+  if (!valida.success) {
+    res.status(400).json({ erro: valida.error })
+    return
+  }
 
-//   // Desestrutura os dados validados
-//   const { nome, email, obs } = valida.data
+  // Desestrutura os dados validados
+  const { nome, email, obs } = valida.data
 
-//   try {
-//     const aluno = await prisma.aluno.update({
-//       where: { id: Number(id) },
-//       data: { nome, email, obs }
-//     })
-//     res.status(200).json(aluno)
-//   } catch (error) {
-//     res.status(500).json({ erro: error })
-//   }
-// })
+  try {
+    const cliente = await prisma.cliente.update({
+      where: { id: Number(id) },
+      data: { nome, email, obs }
+    })
+    res.status(200).json(cliente)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
 
-// router.delete("/:id", async (req, res) => {
-//   // recebe o id passado como parâmetro
-//   const { id } = req.params
+router.delete("/:id", async (req, res) => {
+  // recebe o id passado como parâmetro
+  const { id } = req.params
 
-//   // realiza a exclusão da seleção
-//   try {
-//     const aluno = await prisma.aluno.delete({
-//       where: { id: Number(id) }
-//     })
-//     res.status(200).json(aluno)
-//   } catch (error) {
-//     res.status(500).json({ erro: error })
-//   }
-// })
+  // realiza a exclusão da seleção
+  try {
+    const cliente = await prisma.cliente.delete({
+      where: { id: Number(id) }
+    })
+    res.status(200).json(cliente)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
 
 // router.get('/:id', async (req, res) => {
 //   const id = Number(req.params.id)

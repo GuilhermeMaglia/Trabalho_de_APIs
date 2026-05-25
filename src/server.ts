@@ -2,7 +2,7 @@ import express from 'express'
 const app = express()
 const port = 3000
 
-import routesClientes from "./routes/cliente"
+import routesClientes from "./routes/clientes"
 // import routesDepositos from "./routes/depositos"
 
 app.use(express.json())
