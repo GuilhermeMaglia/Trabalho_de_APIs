@@ -15,7 +15,6 @@ CREATE TABLE `viagens` (
     `reservaid` INTEGER NOT NULL,
     `destino` VARCHAR(60) NOT NULL,
     `transporte` ENUM('Aereo', 'Maritmo', 'Terrestre') NOT NULL DEFAULT 'Terrestre',
-    `preco` DECIMAL(10, 2) NOT NULL,
     `dataSaida` DATETIME(3) NOT NULL,
     `dataRetorno` DATETIME(3) NOT NULL,
     `roteiro` TEXT NULL,
@@ -32,7 +31,6 @@ CREATE TABLE `reservas` (
     `clienteid` INTEGER NOT NULL,
     `pacote` ENUM('Aereo', 'Turistico', 'Hospedagem', 'Experiência', 'SeguroViagem') NOT NULL,
     `preco` DECIMAL(9, 2) NOT NULL,
-    `data` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

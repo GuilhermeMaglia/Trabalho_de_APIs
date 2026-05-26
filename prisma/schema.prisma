@@ -24,7 +24,6 @@ model Viagem {
   reservaid    Int
   destino      String     @db.VarChar(60)
   transporte   Transportes @default(Terrestre)
-  preco        Decimal    @db.Decimal(10, 2)
   dataSaida    DateTime
   dataRetorno  DateTime
   roteiro      String?    @db.Text
@@ -43,7 +42,6 @@ model Reserva {
   clienteid  Int
   pacote     Pacotes
   preco      Decimal   @db.Decimal(9,2)
-  data       DateTime  @default(now())
 
   cliente    Cliente   @relation(fields: [clienteid], references: [id])
   viagens    Viagem[]
