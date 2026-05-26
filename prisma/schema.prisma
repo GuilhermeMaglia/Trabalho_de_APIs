@@ -12,7 +12,6 @@ model Cliente {
   nome     String    @db.VarChar(40)
   email    String    @db.VarChar(60)
   obs      String?   @db.Text
-  saldo    Decimal   @db.Decimal(9,2) @default(0)
   viagens  Viagem[]
   reservas Reserva[]
 

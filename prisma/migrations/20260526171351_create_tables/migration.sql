@@ -4,7 +4,6 @@ CREATE TABLE `clientes` (
     `nome` VARCHAR(40) NOT NULL,
     `email` VARCHAR(60) NOT NULL,
     `obs` TEXT NULL,
-    `saldo` DECIMAL(9, 2) NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
