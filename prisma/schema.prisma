@@ -12,39 +12,35 @@ model Cliente {
   nome     String    @db.VarChar(40)
   email    String    @db.VarChar(60)
   obs      String?   @db.Text
-  viagens  Viagem[]
   reservas Reserva[]
 
   @@map("clientes")
 }
 
 model Viagem {
-  id           Int        @id @default(autoincrement())
-  idCliente    Int
-  reservaid    Int
-  destino      String     @db.VarChar(60)
-  transporte   Transportes @default(Terrestre)
-  dataSaida    DateTime
-  dataRetorno  DateTime
-  roteiro      String?    @db.Text
-  localSaida   String?    @db.Text
-  Nvagas       Decimal
-  Nreservas    Decimal
-
-  cliente      Cliente    @relation(fields: [idCliente], references: [id])
-  reserva      Reserva    @relation(fields: [reservaid], references: [id])
+  id          Int         @id @default(autoincrement())
+  destino     String      @db.VarChar(60)
+  transporte  Transportes @default(Terrestre)
+  dataSaida   DateTime
+  dataRetorno DateTime
+  roteiro     String?     @db.Text
+  localSaida  String?     @db.Text
+  Nvagas      Int
+  Nreservas   Int         @default(0)
+  reservas    Reserva[]
 
   @@map("viagens")
 }
 
 model Reserva {
-  id         Int       @id @default(autoincrement())
-  clienteid  Int
-  pacote     Pacotes
-  preco      Decimal   @db.Decimal(9,2)
+  id        Int     @id @default(autoincrement())
+  clienteId Int
+  viagemId  Int
+  pacote    Pacotes
+  preco     Decimal @db.Decimal(9, 2)
 
-  cliente    Cliente   @relation(fields: [clienteid], references: [id])
-  viagens    Viagem[]
+  cliente Cliente @relation(fields: [clienteId], references: [id])
+  viagem  Viagem  @relation(fields: [viagemId], references: [id])
 
   @@map("reservas")
 }
