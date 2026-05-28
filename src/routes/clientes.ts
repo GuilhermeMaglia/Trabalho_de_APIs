@@ -81,29 +81,29 @@ router.delete("/:id", async (req, res) => {
   }
 })
 
-// router.get('/:id', async (req, res) => {
-//   const id = Number(req.params.id)
-//   if (Number.isNaN(id)) {
-//     res.status(400).json({ erro: 'Código inválido' })
-//     return
-//   }
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id)
+  if (Number.isNaN(id)) {
+    res.status(400).json({ erro: 'Código inválido' })
+    return
+  }
 
-//   try {
-//     const aluno = await prisma.aluno.findUnique({
-//       where: { id }
-//     })
+  try {
+    const cliente = await prisma.cliente.findUnique({
+      where: { id }
+    })
 
-//     if (!aluno) {
-//       res.status(404).json({ erro: 'Aluno não cadastrada' })
-//       return
-//     }
+    if (!cliente) {
+      res.status(404).json({ erro: 'Cliente não cadastrado' })
+      return
+    }
 
-//     res.status(200).json(aluno)
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ erro: 'Erro interno do servidor' })
-//   }
-// })
+    res.status(200).json(cliente)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ erro: 'Erro interno do servidor' })
+  }
+})
 
 // function gerarTabelaHTML(dados: any) {
 //   // Código Inicial, Dados do Aluno e Responsável, Cabeçalho da Tabela
@@ -232,7 +232,7 @@ router.delete("/:id", async (req, res) => {
 // router.get("/email/:id", async (req, res) => {
 //   const { id } = req.params
 //   try {
-//     const alunos = await prisma.aluno.findFirst({
+//     const clientes = await prisma.cliente.findFirst({
 //       where: { id: Number(id) },
 //       include: {
 //         depositos: true,

@@ -3,15 +3,17 @@ const app = express()
 const port = 3000
 
 import routesClientes from "./routes/clientes"
-// import routesDepositos from "./routes/depositos"
+import routesReservas from "./routes/reservas"
+import routesViagens from "./routes/viagens"
 
 app.use(express.json())
 
 app.use("/clientes", routesClientes)
-// app.use("/depositos", routesDepositos)
+app.use("/reservas", routesReservas)
+app.use("/viagens", routesViagens)
 
 app.get('/', (req, res) => {
-  res.send('API: Sistema de Controle de Cantina Escolar')
+  res.send('API: Sistema de Controle de Viagens e Reservas')
 })
 
 app.listen(port, () => {
