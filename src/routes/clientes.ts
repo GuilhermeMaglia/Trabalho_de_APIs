@@ -43,7 +43,6 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
-  // recebe o id passado como parâmetro
   const { id } = req.params
 
   const valida = clienteSchema.safeParse(req.body)
@@ -52,7 +51,6 @@ router.put("/:id", async (req, res) => {
     return
   }
 
-  // Desestrutura os dados validados
   const { nome, email, obs } = valida.data
 
   try {
@@ -67,10 +65,8 @@ router.put("/:id", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
-  // recebe o id passado como parâmetro
   const { id } = req.params
 
-  // realiza a exclusão da seleção
   try {
     const cliente = await prisma.cliente.delete({
       where: { id: Number(id) }
@@ -105,151 +101,182 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// function gerarTabelaHTML(dados: any) {
-//   // Código Inicial, Dados do Aluno e Responsável, Cabeçalho da Tabela
-//   let html = `
-//     <html>
-//     <body style="font-family: Helvetica, Arial, sans-serif;">
-//     <h2>Cantina Escolar: Relatório de Vendas e Depósitos</h2>
-//     <h3>Aluno: ${dados.nome} - Turma: ${dados.turma}</h3>
-//     <h3>Responsável: ${dados.responsavel}</h3> 
-//     <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-//       <thead style="background-color: rgb(195, 191, 191);">
-//         <tr>
-//           <th>Data e Hora</th>
-//           <th>Produto/Depósito</th>          
-//           <th>Valor R$:</th>
-//           <th>Débito R$</th>
-//           <th>Crédito R$</th>
-//         </tr>
-//       </thead>
-//       <tbody>
-//   `;
+function gerarTabelaHTML(dados: any) {
+  const clienteNome = dados?.nome ?? 'Cliente'
+  const clienteEmail = dados?.email ?? ''
+  const reservas = Array.isArray(dados?.reservas) ? dados.reservas : []
 
-//   // Lançamentos de Depósitos
-//   let totalDepositos = 0;
-//   for (const deposito of dados.depositos) {
-//     totalDepositos += Number(deposito.valor)
+  let html = `
+    <html>
+    <body style="font-family: Helvetica, Arial, sans-serif;">
+    <h2>Relatório de Reservas e Viagens</h2>
+    <h3>Cliente: ${clienteNome}</h3>
+    ${clienteEmail ? `<h4>Email: ${clienteEmail}</h4>` : ''}
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+      <thead style="background-color: rgb(195, 191, 191);">
+        <tr>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Descrição</th>
+          <th>Valor R$</th>
+        </tr>
+      </thead>
+      <tbody>
+  `
 
-//     const data = new Date(deposito.data)
+  let totalReservas = 0
+  for (const reserva of reservas) {
+    const data = new Date(reserva.data)
+    const dataFormatada = data.toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
 
-//     const dataFormatada = data.toLocaleString('pt-BR', {
-//       timeZone: 'America/Sao_Paulo',
-//       day: '2-digit',
-//       month: '2-digit',
-//       year: 'numeric',
-//       hour: '2-digit',
-//       minute: '2-digit'
-//     })
+    const valor = Number(reserva.preco ?? 0)
+    totalReservas += valor
+    const destino = reserva.viagem?.destino ?? 'Destino não informado'
+    const transporte = reserva.viagem?.transporte ?? 'Desconhecido'
 
-//     html += `
-//       <tr>
-//         <td>${dataFormatada}</td>
-//         <td>Depósito</td>
-//         <td style="text-align: right;">${Number(deposito.valor).toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//         <td> </td>
-//         <td style="text-align: right;">${Number(deposito.valor).toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//       </tr>
-//     `;
-//   }
+    html += `
+      <tr>
+        <td>${dataFormatada}</td>
+        <td>Reserva</td>
+        <td>${reserva.pacote} - ${destino} (${transporte})</td>
+        <td style="text-align: right;">${valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })}</td>
+      </tr>
+    `
+  }
 
-//   // Lançamentos de Vendas
-//   let totalVendas = 0;
-//   for (const venda of dados.vendas) {
-//     totalVendas += venda.quant * Number(venda.preco)
+  if (reservas.length === 0) {
+    html += `
+      <tr>
+        <td colspan="4" style="text-align: center; padding: 16px;">Nenhuma reserva encontrada para este cliente.</td>
+      </tr>
+    `
+  }
 
-//     const data = new Date(venda.data)
+  html += `
+      <tr style="font-weight: bold; background-color:rgb(235, 232, 232);">
+        <td colspan="3" style="text-align: right;">Total Geral:</td>
+        <td style="text-align: right;">R$ ${totalReservas.toLocaleString('pt-br', { minimumFractionDigits: 2 })}</td>
+      </tr>
+  `
 
-//     const dataFormatada = data.toLocaleString('pt-BR', {
-//       timeZone: 'America/Sao_Paulo',
-//       day: '2-digit',
-//       month: '2-digit',
-//       year: 'numeric',
-//       hour: '2-digit',
-//       minute: '2-digit'
-//     })
+  html += `
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `
 
-//     html += `
-//       <tr>
-//         <td>${dataFormatada}</td>
-//         <td>${venda.quant} x ${venda.produto.nome}</td>
-//         <td style="text-align: right;">${Number(venda.preco).toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//         <td style="text-align: right;">${(venda.quant * Number(venda.preco)).toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//         <td> </td>
-//       </tr>
-//     `;
-//   }
+  return html
+}
 
-//   // Rodapé com totais
-//   html += `
-//       <tr style="font-weight: bold; background-color:rgb(235, 232, 232);">
-//         <td colspan="3" style="text-align: right;">Total Geral:</td>
-//         <td style="text-align: right;">R$ ${totalVendas.toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//         <td style="text-align: right;">R$ ${totalDepositos.toLocaleString("pt-br", { minimumFractionDigits: 2 })}</td>
-//       </tr>
-//   `;
+const transporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 587,
+  secure: false, 
+  auth: {
+    user: process.env.MAILTRAP_EMAIL,
+    pass: process.env.MAILTRAP_SENHA
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
-//   // Fechamento da tabela
-//   html += `
-//           </tbody>
-//         </table>
-//         <h3> Saldo Atual R$: ${(totalDepositos - totalVendas).toLocaleString("pt-br", { minimumFractionDigits: 2 })} </h3>
-//       </body>
-//     </html>
-//   `;
 
-//   return html;
-// }
+async function enviaEmail(dados: any) {
+  const mensagem = gerarTabelaHTML(dados)
 
-// const transporter = nodemailer.createTransport({
-//   host: "sandbox.smtp.mailtrap.io",
-//   port: 587,
-//   secure: false, // true for 465, false for other ports
-//   auth: {
-//     user: process.env.MAILTRAP_EMAIL,
-//     pass: process.env.MAILTRAP_SENHA
-//   },
-//   tls: {
-//     rejectUnauthorized: false
-//   }
-// });
+  try {
+    const info = await transporter.sendMail({
+      from: 'Agencia de Viagens <agencia.Viagens@gmail.com>',
+      to: dados.email,
+      subject: "Relatório de Reservas e Viagens",
+      text: "Relatório de Reservas e Viagens",
+      html: mensagem,
+    });
 
-// async function enviaEmail(dados: any) {
+    console.log("Message sent:", info.messageId);
+  } catch (error) {
+    console.error("Erro ao enviar email:", error)
+    throw error
+  }
+}
 
-//   const mensagem = gerarTabelaHTML(dados)
+router.get("/email/:id", async (req, res) => {
+  const { id } = req.params
+  try {
+    const cliente = await prisma.cliente.findFirst({
+      where: { id: Number(id) },
+      include: {
+        reservas: {
+          include: {
+            viagem: true
+          }
+        }
+      }
+    })
 
-//   const info = await transporter.sendMail({
-//     from: 'Cantina Escolar <cantina@gmail.com>',
-//     to: dados.email,
-//     subject: "Relatório de Vendas e Depósitos",
-//     text: "Relatório de Vendas...", // plain‑text body
-//     html: mensagem, // HTML body
-//   });
+    if (!cliente) {
+      res.status(404).json({ erro: 'Cliente não encontrado' })
+      return
+    }
 
-//   console.log("Message sent:", info.messageId);
-// }
+    await enviaEmail(cliente)
 
-// router.get("/email/:id", async (req, res) => {
-//   const { id } = req.params
-//   try {
-//     const clientes = await prisma.cliente.findFirst({
-//       where: { id: Number(id) },
-//       include: {
-//         depositos: true,
-//         vendas: {
-//           include: {
-//             produto: true
-//           }
-//         }
-//       }
-//     })
+    res.status(200).json(cliente)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
 
-//     enviaEmail(alunos)
+const emailIdsSchema = z.object({
+  ids: z.array(z.number().int().positive()).min(1)
+})
 
-//     res.status(200).json(alunos)
-//   } catch (error) {
-//     res.status(500).json({ erro: error })
-//   }
-// })
+router.post('/email/ids', async (req, res) => {
+  const valida = emailIdsSchema.safeParse(req.body)
+  if (!valida.success) {
+    res.status(400).json({ erro: valida.error })
+    return
+  }
+
+  const { ids } = valida.data
+
+  try {
+    const clientes = await prisma.cliente.findMany({
+      where: { id: { in: ids } },
+      include: {
+        reservas: {
+          include: {
+            viagem: true
+          }
+        }
+      }
+    })
+
+    if (clientes.length === 0) {
+      res.status(404).json({ erro: 'Nenhum cliente encontrado para os IDs informados' })
+      return
+    }
+
+    for (const cliente of clientes) {
+      await enviaEmail(cliente)
+    }
+
+    res.status(200).json({
+      mensagem: `${clientes.length} emails enviados com sucesso`,
+      clientes: clientes.map(c => ({ id: c.id, email: c.email }))
+    })
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
 
 export default router
